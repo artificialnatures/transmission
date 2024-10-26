@@ -4,10 +4,9 @@
   "version": "0.1.0",
   "identifier": "com.artificialnatures.transmission.sandbox",
   "build": {
-    "frontendDist": "../frontend",
-    "devUrl": "http://localhost:3000",
-    "beforeDevCommand": "deno run build",
-    "beforeBuildCommand": "deno run build"
+    "beforeDevCommand": "pnpm run --dir ../../../libraries/transmission.ui.solid build",
+    "beforeBuildCommand": "pnpm run --dir ../../../libraries/transmission.ui.solid build",
+    "frontendDist": "../../../libraries/transmission.ui.solid/dist"
   },
   "app": {
     "windows": [

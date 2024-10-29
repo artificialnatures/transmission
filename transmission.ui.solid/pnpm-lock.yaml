@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@tauri-apps/api':
+        specifier: ^2.0.3
+        version: 2.0.3
       solid-js:
         specifier: ^1.8.11
         version: 1.8.11
@@ -630,6 +633,9 @@ packages:
     resolution: {integrity: sha512-11ypVbp987XxETeRqY5Y3OmmTpm8/jZqJXRvo6AyqBthzkvvjEdReuUMU2yVb+pwWGxfZpWHZ6EUCcGXUMhfwg==}
     peerDependencies:
       solid-js: ^1.6.12
+
+  '@tauri-apps/api@2.0.3':
+    resolution: {integrity: sha512-840qk6n8rbXBXMA5/aAgTYsg5JAubKO0nXw5wf7IzGnUuYKGbB4oFBIZtXOIWy+E0kNTDI3qhq5iqsoMJfwp8g==}
 
   '@types/babel__core@7.20.5':
     resolution: {integrity: sha512-qoQprZvz5wQFJwMDqeseRXWv3rqMvhgpbXFfVyWhbx9X47POIA6i/+dXefEmZKoAgOaTdaIgNSMqMIU61yRyzA==}
@@ -1868,6 +1874,8 @@ snapshots:
   '@solid-primitives/utils@6.2.2(solid-js@1.8.11)':
     dependencies:
       solid-js: 1.8.11
+
+  '@tauri-apps/api@2.0.3': {}
 
   '@types/babel__core@7.20.5':
     dependencies:

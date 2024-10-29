@@ -1,10 +1,10 @@
 [package]
-name = "app"
+name = "sandbox"
 version = "0.1.0"
-description = "A Tauri App"
-authors = ["you"]
-license = ""
-repository = ""
+description = "Transmission Sandbox"
+authors = ["Artificial Natures"]
+license = "Copyright Artificial Natures 2024"
+repository = "https://github.com/artificial-natures/transmission"
 edition = "2021"
 rust-version = "1.77.2"
 

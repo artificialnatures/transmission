@@ -4,9 +4,9 @@
   "version": "0.1.0",
   "identifier": "com.artificialnatures.transmission.sandbox",
   "build": {
-    "beforeDevCommand": "pnpm run --dir ../../../libraries/transmission.ui.solid build",
-    "beforeBuildCommand": "pnpm run --dir ../../../libraries/transmission.ui.solid build",
-    "frontendDist": "../../../libraries/transmission.ui.solid/dist"
+    "beforeDevCommand": "pnpm run --dir ../transmission.ui.solid build",
+    "beforeBuildCommand": "pnpm run --dir ../transmission.ui.solid build",
+    "frontendDist": "../transmission.ui.solid/dist"
   },
   "app": {
     "windows": [

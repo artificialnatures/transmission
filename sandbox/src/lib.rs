@@ -1,9 +1,18 @@
 use transmission;
-use tauri::command;
+use tauri::Emitter;
 
-#[command]
-fn send_message(message: String) {
+#[tauri::command]
+fn log_message(message: String) {
   println!("Tauri received message: {}", message);
+}
+
+#[tauri::command]
+fn send_message(app: tauri::AppHandle, message: String) {
+  println!("Tauri received message: {}", message);
+  match app.emit("message", message) {
+      Ok(_) => (),
+      Err(e) => eprintln!("Error emitting message: {}", e),
+  }
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -19,7 +28,7 @@ pub fn run() {
       }
       Ok(())
     })
-    .invoke_handler(tauri::generate_handler![send_message])
+    .invoke_handler(tauri::generate_handler![log_message, send_message])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
 }

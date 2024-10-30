@@ -1,8 +1,9 @@
 use transmission;
+use tauri::command;
 
-#[tauri::command]
-fn send_message() {
-  println!("Sending message...");
+#[command]
+fn send_message(message: String) {
+  println!("Tauri received message: {}", message);
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]

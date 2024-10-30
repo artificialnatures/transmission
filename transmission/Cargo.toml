@@ -3,10 +3,17 @@ name = "transmission"
 version = "0.1.0"
 edition = "2021"
 
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+wasm-bindgen = "0.2.95"
+
 [dependencies.uuid]
 version = "1.11.0"
 features = [
     "v4",                # v4 = random UUIDs, v7 = random UUIDs with unix timestamp
     "fast-rng",          # Use a faster (but still sufficiently random) RNG
     "macro-diagnostics", # Enable better diagnostics for compile-time UUIDs
+    "js"                 # Enable JS bindings
 ]

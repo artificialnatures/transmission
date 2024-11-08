@@ -2,7 +2,7 @@
   "tasks": {
     "build": "cargo build",
     "build-wasm": "wasm-pack build transmission --target deno --out-dir ../target/transmission-wasm",
-    "bundle-transmission": "deno run --allow-run --allow-env --allow-read bundle.ts --entryPoint=transmission/web, --outputFolder=transmission/dist"
+    "bundle-transmission": "deno run --allow-run --allow-env --allow-read bundle.ts --entryPoint=../target/transmission-wasm, --outputFolder=transmission/dist"
   },
   "imports": {
     "@std/assert": "jsr:@std/assert@1",

@@ -2,4 +2,7 @@
 resolver = "2"
 members = [
     "transmission",
+    "ui/bevy",
+    "ui/cli",
+    "sandbox"
 ]

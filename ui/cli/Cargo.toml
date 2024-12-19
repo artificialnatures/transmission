@@ -1,0 +1,11 @@
+[package]
+name = "transmission-ui-cli"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+path = "lib.rs"
+
+[dependencies]
+transmission = { path = "../../transmission" }

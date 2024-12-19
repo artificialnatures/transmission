@@ -6,21 +6,13 @@ authors = ["Artificial Natures"]
 license = "Copyright Artificial Natures 2024"
 repository = "https://github.com/artificial-natures/transmission"
 edition = "2021"
-rust-version = "1.77.2"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
-[lib]
-name = "app_lib"
-crate-type = ["staticlib", "cdylib", "rlib"]
-
-[build-dependencies]
-tauri-build = { version = "2.0.1" }
+[[bin]]
+name = "sandbox"
+path = "main.rs"
 
 [dependencies]
-serde_json = "1.0"
-serde = { version = "1.0", features = ["derive"] }
-log = "0.4"
-tauri = { version = "2.0.3" }
-tauri-plugin-log = "2.0.0-rc"
+clap = { version = "4.5.23", features = ["derive"] }
 transmission = { path = "../transmission" }
+transmission-ui-bevy = { path = "../ui/bevy" }
+transmission-ui-cli = { path = "../ui/cli" }

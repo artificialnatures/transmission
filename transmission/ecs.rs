@@ -3,7 +3,7 @@ use std::collections::HashMap;
 
 type Identifier = Uuid;
 
-struct EntityTable {
+pub struct EntityTable {
     root_entity: Identifier,
     entities: Vec<Identifier>,
     components: HashMap<Identifier, Vec<Identifier>>,

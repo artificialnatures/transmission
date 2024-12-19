@@ -1,9 +1,0 @@
-@use "bulma/sass" with (
-    $family-primary: '"BerkeleyMonoVariable", sans-serif',
-    $family-secondary: '"BerkeleyMonoVariable", sans-serif'
-);
-
-@font-face {
-    font-family: 'BerkeleyMonoVariable';
-    src: url("assets/BerkeleyMonoVariable-Regular.woff2") format('woff2');
-}

@@ -1,0 +1,14 @@
+[package]
+name = "transmission-ui-bevy"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+path = "lib.rs"
+
+[dependencies]
+bevy = "0.15.0"
+bevy_pancam = "0.16.0"
+bevy_panorbit_camera = "0.21.1"
+transmission = { path = "../../transmission" }

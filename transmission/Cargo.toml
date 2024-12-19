@@ -5,9 +5,7 @@ edition = "2021"
 
 [lib]
 crate-type = ["cdylib", "rlib"]
-
-[dependencies]
-wasm-bindgen = "0.2.95"
+path = "lib.rs"
 
 [dependencies.uuid]
 version = "1.11.0"

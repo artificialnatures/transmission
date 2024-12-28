@@ -1,6 +1,12 @@
 use transmission::renderer::Renderer;
 
-pub struct CliRenderer {}
+pub struct CliRenderer;
+
+impl CliRenderer {
+    pub fn new() -> Box<dyn Renderer> {
+        Box::new(CliRenderer {})
+    }
+}
 
 impl Renderer for CliRenderer {
     fn initialize(&mut self) {
@@ -10,8 +16,4 @@ impl Renderer for CliRenderer {
     fn start(&mut self) {
         println!("Transmission started.")
     }
-}
-
-pub fn create() -> Box<dyn Renderer> {
-    Box::new(CliRenderer {})
 }

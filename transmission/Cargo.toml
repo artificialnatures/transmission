@@ -7,11 +7,9 @@ edition = "2021"
 crate-type = ["cdylib", "rlib"]
 path = "lib.rs"
 
-[dependencies.uuid]
-version = "1.11.0"
-features = [
-    "v4",                # v4 = random UUIDs, v7 = random UUIDs with unix timestamp
-    "fast-rng",          # Use a faster (but still sufficiently random) RNG
-    "macro-diagnostics", # Enable better diagnostics for compile-time UUIDs
-    "js"                 # Enable JS bindings
-]
+[dependencies]
+iroh = { version = "0.30.0", features = [] }
+iroh-blobs = "0.30.0"
+iroh-gossip = "0.30.0"
+iroh-docs = { version = "0.30.0", features = ["rpc"] }
+uuid = { version = "1.11.0", features = ["v4", "fast-rng", "macro-diagnostics", "js"] }

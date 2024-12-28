@@ -1,6 +1,7 @@
 use clap::{Parser, ValueEnum};
-use transmission_ui_bevy::bevy_renderer;
-use transmission_ui_cli::cli_renderer;
+
+use transmission_ui_bevy::bevy_renderer::BevyRenderer;
+use transmission_ui_cli::cli_renderer::CliRenderer;
 
 #[derive(ValueEnum, Debug, Clone)]
 enum RendererImplementation {
@@ -24,9 +25,9 @@ fn main() {
         };
     let mut renderer =
         match renderer_implementation {
-            RendererImplementation::Default => cli_renderer::create(),
-            RendererImplementation::Cli => cli_renderer::create(),
-            RendererImplementation::Bevy => bevy_renderer::create()
+            RendererImplementation::Default => CliRenderer::new(),
+            RendererImplementation::Cli => CliRenderer::new(),
+            RendererImplementation::Bevy => BevyRenderer::new()
         };
     renderer.initialize();
     renderer.start();

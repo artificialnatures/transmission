@@ -8,6 +8,14 @@ pub struct BevyRenderer {
     app: App
 }
 
+impl BevyRenderer {
+    pub fn new() -> Box<dyn Renderer> {
+        Box::new(BevyRenderer {
+            app: App::new()
+        })
+    }
+}
+
 impl Renderer for BevyRenderer {
     fn initialize(&mut self) {
         self.app
@@ -21,12 +29,6 @@ impl Renderer for BevyRenderer {
     fn start(&mut self) {
         self.app.run();
     }
-}
-
-pub fn create() -> Box<dyn Renderer> {
-    Box::new(BevyRenderer {
-        app: App::new()
-    })
 }
 
 fn setup(

@@ -8,8 +8,4 @@ crate-type = ["cdylib", "rlib"]
 path = "lib.rs"
 
 [dependencies]
-iroh = { version = "0.30.0", features = [] }
-iroh-blobs = "0.30.0"
-iroh-gossip = "0.30.0"
-iroh-docs = { version = "0.30.0", features = ["rpc"] }
-uuid = { version = "1.11.0", features = ["v4", "fast-rng", "macro-diagnostics", "js"] }
+uuid = { version = "1", features = ["v4", "fast-rng", "macro-diagnostics", "js"] }

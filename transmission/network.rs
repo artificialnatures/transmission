@@ -21,17 +21,22 @@ impl From<String> for NetworkImplementation {
     }
 }
 
-pub struct Network {
-    pub initialize: fn() -> (),
-    pub start: fn() -> (),
-    pub shutdown: fn() -> ()
+pub enum Network {
+    Isolated,
+    PeerToPeer(IrohPeerToPeerNetwork)
 }
 
-pub struct IsolatedNetwork {}
-
-impl IsolatedNetwork {
-    pub fn new() -> IsolatedNetwork {
-        IsolatedNetwork {}
+impl Network {
+    pub async fn new(implementation: NetworkImplementation) -> Result<Network, TransmissionError> {
+        match implementation {
+            NetworkImplementation::Isolated => Ok(Network::Isolated),
+            NetworkImplementation::PeerToPeer => {
+                match IrohPeerToPeerNetwork::new().await {
+                    Ok(network) => Ok(Network::PeerToPeer(network)),
+                    Err(error) => Err(error)
+                }
+            }
+        }
     }
 }
 
@@ -40,38 +45,34 @@ pub struct IrohPeerToPeerNetwork {
     router: Router
 }
 
-pub async fn build_network() -> Result<IrohPeerToPeerNetwork, TransmissionError> {
-    // create an iroh endpoint that includes the standard discovery mechanisms
-    // we've built at number0
-    match Endpoint::builder().discovery_n0().bind().await {
-        Ok(endpoint) => {
-            let builder = Router::builder(endpoint.clone());
-            // build the blobs protocol
-            let local_pool = LocalPool::default();
-            let blobs = Blobs::memory().build(local_pool.handle(), builder.endpoint());
-            // build the gossip protocol
-            match Gossip::builder().spawn(builder.endpoint().clone()).await {
-                Ok(gossip) => {
-                    // build the docs protocol
-                    match Docs::memory().spawn(&blobs, &gossip).await {
-                        Ok(docs) => {
-                            //set up router
-                            match builder.accept(BLOBS_ALPN, blobs).accept(GOSSIP_ALPN, gossip).accept(DOCS_ALPN, docs).spawn().await {
-                                Ok(router) => {
-                                    Ok(IrohPeerToPeerNetwork {
-                                        endpoint,
-                                        router
-                                    })
+impl IrohPeerToPeerNetwork {
+    pub async fn new() -> Result<IrohPeerToPeerNetwork, TransmissionError> {
+        match Endpoint::builder().discovery_n0().bind().await {
+            Ok(endpoint) => {
+                let builder = Router::builder(endpoint.clone());
+                let local_pool = LocalPool::default();
+                let blobs = Blobs::memory().build(local_pool.handle(), builder.endpoint());
+                match Gossip::builder().spawn(builder.endpoint().clone()).await {
+                    Ok(gossip) => {
+                        match Docs::memory().spawn(&blobs, &gossip).await {
+                            Ok(docs) => {
+                                match builder.accept(BLOBS_ALPN, blobs).accept(GOSSIP_ALPN, gossip).accept(DOCS_ALPN, docs).spawn().await {
+                                    Ok(router) => {
+                                        Ok(IrohPeerToPeerNetwork {
+                                            endpoint,
+                                            router
+                                        })
+                                    }
+                                    Err(_) => Err(TransmissionError::new("could not build router"))
                                 }
-                                Err(_) => Err(TransmissionError::new("could not build router"))
                             }
+                            Err(_) => Err(TransmissionError::new("could not build docs protocol"))
                         }
-                        Err(_) => Err(TransmissionError::new("could not build docs protocol"))
                     }
+                    Err(_) => Err(TransmissionError::new("could not build gossip protocol"))
                 }
-                Err(_) => Err(TransmissionError::new("could not build gossip protocol"))
             }
+            Err(_) => Err(TransmissionError::new("could not bind endpoint"))
         }
-        Err(_) => Err(TransmissionError::new("could not bind endpoint"))
     }
 }

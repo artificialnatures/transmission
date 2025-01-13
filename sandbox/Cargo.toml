@@ -13,4 +13,5 @@ path = "main.rs"
 
 [dependencies]
 clap = { version = "4.5.23", features = ["derive"] }
+tokio = "1.43.0"
 transmission = { path = "../transmission" }

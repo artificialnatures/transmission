@@ -1,3 +1,4 @@
+use crate::errors::TransmissionError;
 use crate::network::{Network, NetworkImplementation};
 use crate::renderer::{Renderer, RendererImplementation};
 
@@ -12,42 +13,18 @@ pub struct Transmission {
 }
 
 impl Transmission {
-    pub fn new(config: TransmissionConfiguration) -> Transmission {
-        let mut renderer =
-            match config.renderer_implementation {
-                RendererImplementation::Default | RendererImplementation::Cli => {
-                    Renderer {
-                        initialize: || {},
-                        start: || {}
+    pub async fn new(config: TransmissionConfiguration) -> Result<Transmission, TransmissionError> {
+        let renderer = Renderer::new(config.renderer_implementation);
+        match Network::new(config.network_implementation).await {
+            Ok(network) => {
+                Ok(
+                    Transmission {
+                        renderer,
+                        network
                     }
-                },
-                RendererImplementation::Bevy => {
-                    Renderer {
-                        initialize: || {},
-                        start: || {}
-                    }
-                }
-            };
-        let network =
-            match config.network_implementation {
-                NetworkImplementation::Isolated => {
-                    Network {
-                        initialize: || {},
-                        start: || {},
-                        shutdown: || {}
-                    }
-                },
-                NetworkImplementation::PeerToPeer => {
-                    Network {
-                        initialize: || {},
-                        start: || {},
-                        shutdown: || {}
-                    }
-                }
-            };
-        Transmission {
-            renderer,
-            network
+                )
+            }
+            Err(error) => Err(error)
         }
     }
 }

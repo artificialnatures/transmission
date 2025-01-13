@@ -1,6 +1,6 @@
 #[derive(Debug, Clone)]
 pub struct TransmissionError {
-    description: String
+    pub description: String
 }
 
 impl TransmissionError {

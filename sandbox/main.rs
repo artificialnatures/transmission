@@ -14,13 +14,19 @@ struct SandboxArguments {
     network: String
 }
 
-fn main() {
+#[tokio::main]
+async fn main() {
     let arguments = SandboxArguments::parse();
     let config = TransmissionConfiguration {
         renderer_implementation: RendererImplementation::from(arguments.renderer),
         network_implementation: NetworkImplementation::from(arguments.network)
     };
-    let transmission = Transmission::new(config);
-    (transmission.renderer.initialize)();
-    (transmission.renderer.start)();
+    match Transmission::new(config).await {
+        Ok(_) => {
+            println!("Yay!")
+        }
+        Err(error) => {
+            println!("{}", error.description);
+        }
+    }
 }

@@ -1,3 +1,6 @@
+use transmission_ui_bevy::bevy_renderer::BevyRenderer;
+use transmission_ui_cli::cli_renderer::CliRenderer;
+
 #[derive(Debug, Clone)]
 pub enum RendererImplementation {
     Default,
@@ -16,16 +19,20 @@ impl From<String> for RendererImplementation {
     }
 }
 
-pub struct Renderer {
-    pub initialize: fn() -> (),
-    pub start: fn() -> ()
+pub enum Renderer {
+    Cli(CliRenderer),
+    Bevy(BevyRenderer)
 }
 
 impl Renderer {
     pub fn new(implementation: RendererImplementation) -> Renderer {
-        Renderer {
-            initialize: || {},
-            start: || {}
+        match implementation {
+            RendererImplementation::Default | RendererImplementation::Cli => {
+                Renderer::Cli(CliRenderer::new())
+            },
+            RendererImplementation::Bevy => {
+                Renderer::Bevy(BevyRenderer::new())
+            }
         }
     }
 }

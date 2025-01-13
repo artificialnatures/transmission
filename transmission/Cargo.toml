@@ -8,4 +8,11 @@ crate-type = ["cdylib", "rlib"]
 path = "lib.rs"
 
 [dependencies]
+transmission-ui-bevy = { path = "../ui/bevy" }
+transmission-ui-cli = { path = "../ui/cli" }
+tokio = "1.43.0"
 uuid = { version = "1", features = ["v4", "fast-rng", "macro-diagnostics", "js"] }
+iroh = "0.30"
+iroh-docs = { version = "0.30", features = ["rpc"] }
+iroh-blobs = { version = "0.30", features = ["rpc"] }
+iroh-gossip = { version = "0.30", features = ["rpc"] }

@@ -1,34 +1,26 @@
-use clap::{Parser, ValueEnum};
-
-use transmission_ui_bevy::bevy_renderer::BevyRenderer;
-use transmission_ui_cli::cli_renderer::CliRenderer;
-
-#[derive(ValueEnum, Debug, Clone)]
-enum RendererImplementation {
-    Default,
-    Cli,
-    Bevy
-}
+use clap::Parser;
+use transmission::{
+    transmission::Transmission,
+    network::NetworkImplementation, 
+    renderer::RendererImplementation, 
+    transmission::TransmissionConfiguration
+};
 
 #[derive(Parser, Debug)]
 struct SandboxArguments {
-    #[arg(short, long)]
-    renderer: Option<RendererImplementation>
+    #[arg(short, long, default_value="default")]
+    renderer: String,
+    #[arg(short, long, default_value="default")]
+    network: String
 }
 
 fn main() {
     let arguments = SandboxArguments::parse();
-    let renderer_implementation =
-        match arguments.renderer {
-            None => RendererImplementation::Default,
-            Some(implementation) => implementation
-        };
-    let mut renderer =
-        match renderer_implementation {
-            RendererImplementation::Default => CliRenderer::new(),
-            RendererImplementation::Cli => CliRenderer::new(),
-            RendererImplementation::Bevy => BevyRenderer::new()
-        };
-    renderer.initialize();
-    renderer.start();
+    let config = TransmissionConfiguration {
+        renderer_implementation: RendererImplementation::from(arguments.renderer),
+        network_implementation: NetworkImplementation::from(arguments.network)
+    };
+    let transmission = Transmission::new(config);
+    (transmission.renderer.initialize)();
+    (transmission.renderer.start)();
 }

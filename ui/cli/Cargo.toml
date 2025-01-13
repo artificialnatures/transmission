@@ -8,4 +8,4 @@ crate-type = ["cdylib", "rlib"]
 path = "lib.rs"
 
 [dependencies]
-transmission = { path = "../../transmission" }
+

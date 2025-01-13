@@ -1,4 +1,3 @@
-use transmission::renderer::Renderer;
 use crate::tool::{Tool, update_tool};
 use bevy::prelude::*;
 use bevy_panorbit_camera::{PanOrbitCamera, PanOrbitCameraPlugin};
@@ -9,15 +8,11 @@ pub struct BevyRenderer {
 }
 
 impl BevyRenderer {
-    pub fn new() -> Box<dyn Renderer> {
-        Box::new(BevyRenderer {
-            app: App::new()
-        })
+    pub fn new() -> BevyRenderer {
+        BevyRenderer { app: App::new() }
     }
-}
 
-impl Renderer for BevyRenderer {
-    fn initialize(&mut self) {
+    pub fn initialize(&mut self) {
         self.app
             .add_plugins(DefaultPlugins)
             .add_plugins(PanCamPlugin)
@@ -26,7 +21,7 @@ impl Renderer for BevyRenderer {
             .add_systems(Update, update_tool);
     }
 
-    fn start(&mut self) {
+    pub fn start(&mut self) {
         self.app.run();
     }
 }

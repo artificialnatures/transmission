@@ -14,5 +14,3 @@ path = "main.rs"
 [dependencies]
 clap = { version = "4.5.23", features = ["derive"] }
 transmission = { path = "../transmission" }
-transmission-ui-bevy = { path = "../ui/bevy" }
-transmission-ui-cli = { path = "../ui/cli" }

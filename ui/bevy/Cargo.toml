@@ -11,4 +11,3 @@ path = "lib.rs"
 bevy = "0.15.0"
 bevy_pancam = "0.16.0"
 bevy_panorbit_camera = "0.21.1"
-transmission = { path = "../../transmission" }

@@ -1,7 +1,20 @@
-use iroh::{protocol::Router, Endpoint};
-use iroh_blobs::{net_protocol::Blobs, util::local_pool::LocalPool, ALPN as BLOBS_ALPN};
-use iroh_docs::{protocol::Docs, ALPN as DOCS_ALPN};
-use iroh_gossip::{net::Gossip, ALPN as GOSSIP_ALPN};
+use iroh::{
+    protocol::Router, 
+    Endpoint
+};
+use iroh_gossip::{
+    net::Gossip, 
+    ALPN as GOSSIP_ALPN
+};
+use iroh_blobs::{
+    net_protocol::Blobs, 
+    util::local_pool::LocalPool, 
+    ALPN as BLOBS_ALPN,
+    store::mem::Store as BlobStore
+};
+use iroh_docs::{
+    protocol::Docs, AuthorId, ALPN as DOCS_ALPN
+};
 
 use crate::errors::TransmissionError;
 
@@ -42,7 +55,11 @@ impl Network {
 
 pub struct IrohPeerToPeerNetwork {
     endpoint: Endpoint,
-    router: Router
+    router: Router,
+    gossip: Gossip,
+    blobs: Blobs<BlobStore>,
+    docs: Docs<BlobStore>,
+    author_id: AuthorId
 }
 
 impl IrohPeerToPeerNetwork {
@@ -56,12 +73,24 @@ impl IrohPeerToPeerNetwork {
                     Ok(gossip) => {
                         match Docs::memory().spawn(&blobs, &gossip).await {
                             Ok(docs) => {
-                                match builder.accept(BLOBS_ALPN, blobs).accept(GOSSIP_ALPN, gossip).accept(DOCS_ALPN, docs).spawn().await {
+                                match builder
+                                    .accept(BLOBS_ALPN, blobs.clone())
+                                    .accept(GOSSIP_ALPN, gossip.clone())
+                                    .accept(DOCS_ALPN, docs.clone()).spawn().await {
                                     Ok(router) => {
-                                        Ok(IrohPeerToPeerNetwork {
-                                            endpoint,
-                                            router
-                                        })
+                                        match docs.client().authors().create().await {
+                                            Ok(author_id) => {
+                                                Ok(IrohPeerToPeerNetwork {
+                                                    endpoint,
+                                                    router,
+                                                    gossip,
+                                                    blobs,
+                                                    docs,
+                                                    author_id
+                                                })
+                                            }
+                                            Err(_) => Err(TransmissionError::new("could not create author id"))
+                                        }
                                     }
                                     Err(_) => Err(TransmissionError::new("could not build router"))
                                 }

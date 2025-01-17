@@ -1,9 +1,11 @@
 use clap::Parser;
 use transmission::{
-    transmission::Transmission,
+    transmission::{
+        TransmissionConfiguration,
+        Transmission
+    },
     network::NetworkImplementation, 
-    renderer::RendererImplementation, 
-    transmission::TransmissionConfiguration
+    renderer::RendererImplementation
 };
 
 #[derive(Parser, Debug)]

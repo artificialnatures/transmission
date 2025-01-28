@@ -9,13 +9,24 @@ use iroh_gossip::{
 use iroh_blobs::{
     net_protocol::Blobs, 
     util::local_pool::LocalPool, 
-    ALPN as BLOBS_ALPN,
-    store::mem::Store as BlobStore
+    ALPN as BLOBS_ALPN
 };
 use iroh_docs::{
-    protocol::Docs, AuthorId, ALPN as DOCS_ALPN
+    protocol::Docs,
+    AuthorId,
+    DocTicket,
+    ALPN as DOCS_ALPN
 };
-
+use quic_rpc::transport::flume::FlumeConnector;
+pub(crate) type BlobsClient = iroh_blobs::rpc::client::blobs::Client<
+    FlumeConnector<iroh_blobs::rpc::proto::Response, iroh_blobs::rpc::proto::Request>,
+>;
+pub(crate) type DocsClient = iroh_docs::rpc::client::docs::Client<
+    FlumeConnector<iroh_docs::rpc::proto::Response, iroh_docs::rpc::proto::Request>,
+>;
+pub(crate) type IrohDocument = iroh_docs::rpc::client::docs::Doc<
+    FlumeConnector<iroh_docs::rpc::proto::Response, iroh_docs::rpc::proto::Request>,
+>;
 use crate::errors::TransmissionError;
 
 #[derive(Debug, Clone)]
@@ -51,15 +62,26 @@ impl Network {
             }
         }
     }
+
+    pub async fn disconnect(self) -> () {
+        match self {
+            Self::Isolated => (),
+            Self::PeerToPeer(iroh_network) => {
+                let _ = iroh_network.router.shutdown().await;
+                ()
+            }
+        }
+    }
 }
 
 pub struct IrohPeerToPeerNetwork {
     endpoint: Endpoint,
     router: Router,
     gossip: Gossip,
-    blobs: Blobs<BlobStore>,
-    docs: Docs<BlobStore>,
-    author_id: AuthorId
+    blobs_client: BlobsClient,
+    docs_client: DocsClient,
+    author_id: AuthorId,
+    local_document: IrohDocument
 }
 
 impl IrohPeerToPeerNetwork {
@@ -78,16 +100,24 @@ impl IrohPeerToPeerNetwork {
                                     .accept(GOSSIP_ALPN, gossip.clone())
                                     .accept(DOCS_ALPN, docs.clone()).spawn().await {
                                     Ok(router) => {
-                                        match docs.client().authors().create().await {
+                                        let blobs_client = blobs.client().clone();
+                                        let docs_client = docs.client().clone();
+                                        match docs_client.authors().create().await {
                                             Ok(author_id) => {
-                                                Ok(IrohPeerToPeerNetwork {
-                                                    endpoint,
-                                                    router,
-                                                    gossip,
-                                                    blobs,
-                                                    docs,
-                                                    author_id
-                                                })
+                                                match docs_client.create().await {
+                                                    Ok(local_document) => {
+                                                        Ok(IrohPeerToPeerNetwork {
+                                                            endpoint,
+                                                            router,
+                                                            gossip,
+                                                            blobs_client,
+                                                            docs_client,
+                                                            author_id,
+                                                            local_document
+                                                        })
+                                                    }
+                                                    Err(_) => Err(TransmissionError::new("could not create document"))
+                                                }
                                             }
                                             Err(_) => Err(TransmissionError::new("could not create author id"))
                                         }

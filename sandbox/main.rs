@@ -28,7 +28,7 @@ async fn main() {
             println!("Yay!")
         }
         Err(error) => {
-            println!("{}", error.description);
+            println!("{}", error.description)
         }
     }
 }

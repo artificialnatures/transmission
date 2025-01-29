@@ -17,6 +17,11 @@ use iroh_docs::{
     DocTicket,
     ALPN as DOCS_ALPN
 };
+use iroh_docs::rpc::client::docs::{
+    Entry, 
+    LiveEvent, 
+    ShareMode
+};
 use quic_rpc::transport::flume::FlumeConnector;
 pub(crate) type BlobsClient = iroh_blobs::rpc::client::blobs::Client<
     FlumeConnector<iroh_blobs::rpc::proto::Response, iroh_blobs::rpc::proto::Request>,
@@ -58,6 +63,18 @@ impl Network {
                 match IrohPeerToPeerNetwork::new().await {
                     Ok(network) => Ok(Network::PeerToPeer(network)),
                     Err(error) => Err(error)
+                }
+            }
+        }
+    }
+
+    pub async fn generate_invite(self) -> Result<String, TransmissionError> {
+        match self {
+            Self::Isolated => Err(TransmissionError::new("no invite available")),
+            Self::PeerToPeer(iroh_network) => {
+                match iroh_network.local_document.share(ShareMode::Write, Default::default()).await {
+                    Ok(ticket) => Ok(ticket.to_string()),
+                    Err(error) => Err(TransmissionError::new(&error.to_string()))
                 }
             }
         }

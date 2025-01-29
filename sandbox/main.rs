@@ -24,8 +24,12 @@ async fn main() {
         network_implementation: NetworkImplementation::from(arguments.network)
     };
     match Transmission::new(config).await {
-        Ok(_) => {
-            println!("Yay!")
+        Ok(transmission) => {
+            println!("Transmission started.");
+            match transmission.network.generate_invite().await {
+                Ok(invite) => println!("Document invite:\n{}", invite),
+                Err(error) => eprintln!("{}", error)
+            }
         }
         Err(error) => {
             println!("{}", error.description)

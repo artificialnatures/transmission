@@ -13,7 +13,9 @@ struct SandboxArguments {
     #[arg(short, long, default_value="default")]
     renderer: String,
     #[arg(short, long, default_value="default")]
-    network: String
+    network: String,
+    #[arg(short, long, default_value=None)]
+    join: Option<String>
 }
 
 #[tokio::main]
@@ -26,9 +28,19 @@ async fn main() {
     match Transmission::new(config).await {
         Ok(transmission) => {
             println!("Transmission started.");
-            match transmission.network.generate_invite().await {
-                Ok(invite) => println!("Document invite:\n{}", invite),
-                Err(error) => eprintln!("{}", error)
+            match arguments.join {
+                Some(invite) => {
+                    match transmission.network.accept_invite(invite).await {
+                        Ok(_) => println!("Successfully accepted invite!"),
+                        Err(error) => eprintln!("{}", error)
+                    }
+                }
+                None => {
+                    match transmission.network.generate_invite().await {
+                        Ok(invite) => println!("Document invite:\n{}", invite),
+                        Err(error) => eprintln!("{}", error)
+                    }
+                }
             }
         }
         Err(error) => {

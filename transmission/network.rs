@@ -1,3 +1,5 @@
+use std::str::FromStr;
+
 use iroh::{
     protocol::Router, 
     Endpoint
@@ -70,10 +72,27 @@ impl Network {
 
     pub async fn generate_invite(self) -> Result<String, TransmissionError> {
         match self {
-            Self::Isolated => Err(TransmissionError::new("no invite available")),
+            Self::Isolated => Err(TransmissionError::new("no network available")),
             Self::PeerToPeer(iroh_network) => {
                 match iroh_network.local_document.share(ShareMode::Write, Default::default()).await {
                     Ok(ticket) => Ok(ticket.to_string()),
+                    Err(error) => Err(TransmissionError::new(&error.to_string()))
+                }
+            }
+        }
+    }
+
+    pub async fn accept_invite(self, invite: String) -> Result<(), TransmissionError> {
+        match self {
+            Self::Isolated => Err(TransmissionError::new("no network available")),
+            Self::PeerToPeer(iroh_network) => {
+                match DocTicket::from_str(&invite) {
+                    Ok(ticket) => {
+                        match iroh_network.docs_client.import(ticket).await {
+                            Ok(document) => Ok(()),
+                            Err(error) => Err(TransmissionError::new(&error.to_string()))
+                        }
+                    }
                     Err(error) => Err(TransmissionError::new(&error.to_string()))
                 }
             }
